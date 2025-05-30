@@ -10,6 +10,10 @@
       background-color: #f9f9f9;
       font-family: sans-serif;
     }
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+    }
     .header {
       position: absolute;
       top: 10px;
@@ -22,11 +26,20 @@
       text-align: center;
       font-size: 1rem;
       max-width: 90vw;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
+    #ar-button {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      background-color: black;
+      color: white;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
 </head>
@@ -34,20 +47,41 @@
 
   <div class="header">
     <h2 style="margin: 0;">Try the chair in your space</h2>
-    <p style="margin: 4px 0;">Tap the AR icon 👇</p>
+    <p style="margin: 4px 0;">Tap the button below to launch AR</p>
   </div>
 
   <model-viewer
+    id="viewer"
     src="hightech.glb"
     ios-src="hightech.usdz"
     alt="A high-tech chair"
     ar
-    ar-modes="quick-look scene-viewer webxr"
+    ar-modes="scene-viewer webxr"
     camera-controls
     auto-rotate
     shadow-intensity="1"
     exposure="1">
   </model-viewer>
+
+  <button id="ar-button">View in AR</button>
+
+  <script>
+    const button = document.getElementById('ar-button');
+    const isIOS = /iPhone|iPad/.test(navigator.userAgent);
+
+    button.addEventListener('click', () => {
+      if (isIOS) {
+        // Launch AR Quick Look directly
+        const anchor = document.createElement('a');
+        anchor.setAttribute('rel', 'ar');
+        anchor.setAttribute('href', 'hightech.usdz');
+        anchor.click();
+      } else {
+        // Let model-viewer handle Android AR
+        document.querySelector('model-viewer').activateAR();
+      }
+    });
+  </script>
 
 </body>
 </html>
