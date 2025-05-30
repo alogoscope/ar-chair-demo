@@ -5,25 +5,32 @@
   <title>AR Only Chair Demo</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      background-color: #ffffff;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    #ar-button {
-      padding: 16px 24px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-      background-color: black;
-      color: white;
-      cursor: pointer;
-    }
+  body {
+    margin: 0;
+    background-color: #ffffff;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  #ar-button {
+    padding: 20px 36px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  #ar-button:hover {
+    transform: scale(1.05);
+  }
   </style>
 </head>
 <body>
