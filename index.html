@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Chair in AR</title>
+  <title>High-Tech Chair AR</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     body {
@@ -13,12 +13,16 @@
     .header {
       position: absolute;
       top: 10px;
-      left: 10px;
-      color: black;
-      background-color: rgba(255,255,255,0.8);
-      padding: 10px 15px;
-      border-radius: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255,255,255,0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
       z-index: 10;
+      text-align: center;
+      font-size: 1rem;
+      max-width: 90vw;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     model-viewer {
       width: 100vw;
@@ -29,20 +33,14 @@
 <body>
 
   <div class="header">
-    <h2>Try the chair in your space</h2>
-    <p>Tap the AR icon 👇 on your phone</p>
+    <h2 style="margin: 0;">View the chair in your space</h2>
+    <p style="margin: 4px 0;">Tap the AR icon 👇</p>
   </div>
 
   <model-viewer
     ios-src="hightech.usdz"
-    alt="A 3D model of a chair"
+    alt="A high-tech chair"
     ar
-    ar-modes="quick-look scene-viewer webxr"
-    auto-rotate
+    ar-modes="quick-look"
     camera-controls
-    shadow-intensity="1"
-    exposure="1">
-  </model-viewer>
-
-</body>
-</html>
+    auto
