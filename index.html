@@ -39,7 +39,7 @@
 
   <model-viewer
     id="viewer"
-    ios-src="hightech.usdz"
+    ios-src="blackchair.usdz"
     style="display: none;"
     ar
     ar-modes="quick-look scene-viewer webxr">
@@ -53,7 +53,7 @@
       if (isIOS) {
         const anchor = document.createElement('a');
         anchor.setAttribute('rel', 'ar');
-        anchor.setAttribute('href', 'hightech.usdz');
+        anchor.setAttribute('href', 'blackchair.usdz');
         anchor.click();
       } else {
         document.querySelector('model-viewer').activateAR();
