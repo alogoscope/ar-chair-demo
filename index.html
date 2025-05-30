@@ -16,7 +16,7 @@
       left: 50%;
       transform: translateX(-50%);
       background-color: rgba(255,255,255,0.9);
-      padding: 10px 20px;
+      padding: 12px 20px;
       border-radius: 10px;
       z-index: 10;
       text-align: center;
@@ -33,14 +33,21 @@
 <body>
 
   <div class="header">
-    <h2 style="margin: 0;">View the chair in your space</h2>
+    <h2 style="margin: 0;">Try the chair in your space</h2>
     <p style="margin: 4px 0;">Tap the AR icon 👇</p>
   </div>
 
   <model-viewer
+    src="hightech.glb"
     ios-src="hightech.usdz"
     alt="A high-tech chair"
     ar
-    ar-modes="quick-look"
+    ar-modes="quick-look scene-viewer webxr"
     camera-controls
-    auto
+    auto-rotate
+    shadow-intensity="1"
+    exposure="1">
+  </model-viewer>
+
+</body>
+</html>
