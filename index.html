@@ -1,66 +1,120 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>AR Only Chair Demo</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Pin model-viewer to a stable version -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+
   <style>
-  body {
-    margin: 0;
-    background-color: #ffffff;
-    font-family: sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
+    body {
+      margin: 0; background:#fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      display:flex; align-items:center; justify-content:center; height:100vh;
+    }
+    #ar-button {
+      padding: 60px 100px; font-size: 3rem; font-weight: 700; border-radius: 16px;
+      border: none; background: #000; color: #fff; cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0,0,0,.2); transition: transform .2s ease;
+    }
+    #ar-button:hover { transform: scale(1.03); }
 
-  #ar-button {
-    padding: 60px 100px;
-    font-size: 3rem;
-    font-weight: bold;
-    border-radius: 16px;
-    border: none;
-    background-color: black;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
-  }
-
-  #ar-button:hover {
-    transform: scale(1.03);
-  }
+    /* Fallback notice when AR isn’t available (in-app browsers, etc.) */
+    #fallback {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #111; color:#fff; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem;
+      display:none; text-align:center; max-width: min(92vw, 720px);
+    }
+    #fallback a { color:#fff; text-decoration: underline; }
   </style>
 </head>
 <body>
 
   <button id="ar-button">View Chair in AR</button>
 
-  <model-viewer
-    id="viewer"
-    src="blackchair.glb"
-    ios-src="blackchair.usdz"
-    style="display: none;"
+  <!-- Keep the component off-screen; we’ll just call activateAR() -->
+  <model-viewer id="viewer"
+    src="https://alogoscope.github.io/ar-chair-demo/blackchair.glb"
+    ios-src="https://alogoscope.github.io/ar-chair-demo/blackchair.usdz"
     ar
-    ar-modes="quick-look scene-viewer webxr">
-  </model-viewer>
+    ar-modes="quick-look scene-viewer webxr"
+    camera-controls
+    style="position: absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"
+  ></model-viewer>
+
+  <div id="fallback">
+    AR isn’t available in this view. Please open this page in
+    <span id="which-browser">your browser</span>
+    and try again.
+    <div style="margin-top:6px">
+      <a id="open-external" href="#" rel="noopener">Open in browser</a>
+    </div>
+  </div>
 
   <script>
     const button = document.getElementById('ar-button');
-    const isIOS = /iPhone|iPad/.test(navigator.userAgent);
+    const viewer = document.getElementById('viewer');
+    const fallback = document.getElementById('fallback');
+    const openExternal = document.getElementById('open-external');
+    const whichBrowser = document.getElementById('which-browser');
 
-    button.addEventListener('click', () => {
-      if (isIOS) {
-        const anchor = document.createElement('a');
-        anchor.setAttribute('rel', 'ar');
-        anchor.setAttribute('href', 'blackchair.usdz');
-        anchor.click();
-      } else {
-        document.querySelector('model-viewer').activateAR();
+    const ua = navigator.userAgent || navigator.vendor || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+
+    // Heuristic: detect common “in-app” browsers that block AR handoff
+    const isInAppBrowser = (() => {
+      const l = ua.toLowerCase();
+      // FB/IG/Twitter/LinkedIn apps, some camera apps, etc.
+      return (
+        l.includes('fbav') || l.includes('fb_iab') || l.includes('instagram') ||
+        l.includes('twitter') || l.includes('linkedin') || l.includes('line') ||
+        l.includes('wv') || l.includes('gsa') // Google app webview
+      );
+    })();
+
+    // Suggest correct external browser
+    whichBrowser.textContent = isIOS ? 'Safari' : 'Chrome';
+    openExternal.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Try to force-open in the system browser
+      window.location.href = window.location.href;
+    });
+
+    async function canActivateAR() {
+      try {
+        if ('canActivateAR' in viewer) {
+          return await viewer.canActivateAR;
+        }
+      } catch (e) {}
+      // Fall back to user-agent heuristics
+      return (isIOS || isAndroid) && !isInAppBrowser;
+    }
+
+    button.addEventListener('click', async () => {
+      // If we’re in an in-app browser or AR is blocked, show fallback
+      if (!(await canActivateAR())) {
+        fallback.style.display = 'block';
+        return;
+      }
+      // Use model-viewer’s built-in AR activation (handles iOS Quick Look & Android Scene Viewer / WebXR)
+      try {
+        viewer.activateAR();
+      } catch (e) {
+        // As a last resort on iOS, deep-link the USDZ directly
+        if (isIOS) {
+          const a = document.createElement('a');
+          a.setAttribute('rel', 'ar');
+          a.href = viewer.getAttribute('ios-src');
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        } else {
+          fallback.style.display = 'block';
+        }
       }
     });
   </script>
-
 </body>
 </html>
